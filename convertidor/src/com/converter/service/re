@@ -1,0 +1,35 @@
+package com.converter.service;
+
+
+import com.converter.model.ExchangeRateAPI;
+import com.converter.utils.TimestampUtil;
+
+import java.util.Scanner;
+
+public class ConversionService {
+    public void handleConversion(Scanner scanner, HistoryService historyService) {
+        try {
+            System.out.print("Ingresa la moneda base (ej. USD): ");
+            String baseCurrency = scanner.next().toUpperCase();
+
+            System.out.print("Ingresa la moneda destino (ej. EUR): ");
+            String targetCurrency = scanner.next().toUpperCase();
+
+            System.out.print("Ingresa la cantidad a convertir: ");
+            double amount = scanner.nextDouble();
+
+            double rate = fetchExchangeRate(baseCurrency, targetCurrency);
+            double convertedAmount = amount * rate;
+
+            System.out.printf("Resultado: %.2f %s = %.2f %s\n", amount, baseCurrency, convertedAmount, targetCurrency);
+            historyService.addConversion(baseCurrency, targetCurrency, amount, convertedAmount);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private double fetchExchangeRate(String baseCurrency, String targetCurrency) {
+        return ExchangeRateAPI.getExchangeRate(baseCurrency, targetCurrency);
+    }
+
+}
